@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 产品经理入门</title>
+<style>
+  :root{
+    --bg:#fff; --side:#f7f7f5; --text:#37352f; --muted:#787774; --faint:#9b9a97;
+    --line:#e9e9e7; --hover:#efefed; --active:#e8e8e6; --callout:#f7f6f3;
+    --blue:#2383e2; --blue-bg:#e7f3f8; --green:#448361; --green-bg:#edf3ec;
+    --red:#d44c47; --red-bg:#fdebec; --yellow:#cb912f; --yellow-bg:#fbf3db;
+    --purple:#9065b0; --purple-bg:#f6f3f9; --gray-bg:#f1f1ef;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
+       color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  button{font:inherit;color:inherit;cursor:pointer}
+  input,textarea,select{font:inherit;color:inherit}
+  ::selection{background:#b4d5fe}
+
+  /* ---- 布局 ---- */
+  #app{display:flex;height:100vh}
+  #side{width:260px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;font-size:14px;overflow:hidden}
+  #main{flex:1;overflow-y:auto}
+  .page{max-width:720px;margin:0 auto;padding:56px 48px 120px}
+  @media (max-width:900px){#side{width:220px}.page{padding:40px 24px 100px}}
+  @media (max-width:640px){
+    #app{flex-direction:column}#side{width:100%;height:auto;max-height:44vh;border-right:0;border-bottom:1px solid var(--line)}
+  }
+
+  /* ---- 侧栏 ---- */
+  .side-head{padding:14px 12px 6px}
+  .brand{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;font-weight:600;font-size:14px}
+  .brand:hover{background:var(--hover)}
+  .brand .ico{width:20px;height:20px;border-radius:4px;background:var(--text);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .search{margin:6px 8px 4px;position:relative}
+  .search input{width:100%;padding:6px 10px 6px 30px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:14px;outline:none}
+  .search input:focus{border-color:#c7c7c5;box-shadow:0 0 0 2px rgba(35,131,226,.15)}
+  .search svg{position:absolute;left:9px;top:9px;width:14px;height:14px;color:var(--faint)}
+  .side-body{flex:1;overflow-y:auto;padding:4px 8px 16px}
+  .sec{margin-top:14px}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;color:var(--faint);font-size:12px;font-weight:600;cursor:pointer;border-radius:4px;user-select:none}
+  .sec-h:hover{background:var(--hover);color:var(--muted)}
+  .sec-h .n{font-weight:400}
+  .sec.closed .sec-list{display:none}
+  .row{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:4px;color:var(--muted);cursor:pointer;line-height:1.4;min-height:28px}
+  .row:hover{background:var(--hover);color:var(--text)}
+  .row.on{background:var(--active);color:var(--text);font-weight:500}
+  .row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .en{color:var(--faint);font-size:11px;flex:none;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;background:transparent;border:1.5px solid #cfcfcd}
+  .dot.learning{background:var(--yellow);border-color:var(--yellow)}
+  .dot.got{background:var(--green);border-color:var(--green)}
+  .dot.confused{background:var(--red);border-color:var(--red)}
+  .row.nav{color:var(--text)}
+  .row.nav .ic{width:18px;text-align:center;color:var(--muted)}
+  .next .row{padding:5px 8px}
+  .next .why{display:block;font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .side-foot{border-top:1px solid var(--line);padding:8px}
+  .prog{margin:4px 8px 6px;height:4px;background:#e3e2df;border-radius:2px;overflow:hidden}
+  .prog i{display:block;height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+  .prog-t{padding:0 8px;font-size:12px;color:var(--faint)}
+
+  /* ---- 内容页 ---- */
+  h1{font-size:38px;line-height:1.2;font-weight:700;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+  .tag{display:inline-block;padding:1px 7px;border-radius:3px;font-size:12px;font-weight:500;line-height:1.6}
+  .tag.l1{background:var(--green-bg);color:var(--green)}.tag.l2{background:var(--blue-bg);color:var(--blue)}.tag.l3{background:var(--purple-bg);color:var(--purple)}
+  .tag.cat{background:var(--gray-bg);color:var(--muted)}
+  .tag.st{background:var(--gray-bg);color:var(--muted)}.tag.st.got{background:var(--green-bg);color:var(--green)}.tag.st.confused{background:var(--red-bg);color:var(--red)}.tag.st.learning{background:var(--yellow-bg);color:var(--yellow)}
+  h2{font-size:22px;font-weight:600;margin:38px 0 8px;letter-spacing:-.01em}
+  h3{font-size:17px;font-weight:600;margin:24px 0 6px}
+  p{margin:0 0 10px}
+  .callout{display:flex;gap:12px;padding:14px 16px;border-radius:4px;background:var(--callout);margin:8px 0 14px}
+  .callout .em{font-size:18px;flex:none;line-height:1.4}
+  .callout .body{flex:1}
+  .callout .body b.h{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-bottom:2px}
+  .callout.blue{background:var(--blue-bg)}.callout.yellow{background:var(--yellow-bg)}.callout.purple{background:var(--purple-bg)}.callout.green{background:var(--green-bg)}.callout.red{background:var(--red-bg)}
+  .big{font-size:19px;line-height:1.55;font-weight:500;margin:10px 0 22px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--line);border-radius:14px;font-size:13px;cursor:pointer;background:#fff;color:var(--muted)}
+  .chip:hover{background:var(--hover);color:var(--text)}
+  .chip .dot{width:7px;height:7px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+  .btn{padding:6px 14px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:14px;font-weight:500;transition:background .1s}
+  .btn:hover{background:var(--hover)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:hover{background:#1a73cc}
+  .btn.ok{background:var(--green-bg);border-color:transparent;color:var(--green)}
+  .btn.ok:hover{background:#dfeadf}
+  .btn.warn{background:var(--red-bg);border-color:transparent;color:var(--red)}
+  .btn.warn:hover{background:#f8dcdd}
+  .btn.ghost{border-color:transparent;color:var(--muted)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .hint{font-size:13px;color:var(--faint)}
+  .note{font-size:13px;color:var(--muted);background:var(--callout);padding:10px 14px;border-radius:4px;margin:8px 0}
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  .divider{height:1px;background:var(--line);margin:28px 0}
+  .empty{color:var(--muted);padding:40px 0}
+  .kbd{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--gray-bg);padding:1px 5px;border-radius:3px}
+
+  /* 自测 */
+  .quiz .opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:6px;margin:6px 0;cursor:pointer;background:#fff}
+  .quiz .opt:hover{background:var(--hover)}
+  .quiz .opt .k{width:20px;height:20px;border-radius:50%;border:1.5px solid #cfcfcd;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);margin-top:2px}
+  .quiz .opt.right{background:var(--green-bg);border-color:transparent}.quiz .opt.right .k{background:var(--green);border-color:var(--green);color:#fff}
+  .quiz .opt.wrong{background:var(--red-bg);border-color:transparent}.quiz .opt.wrong .k{background:var(--red);border-color:var(--red);color:#fff}
+  .quiz.done .opt{cursor:default}
+
+  /* 对话 */
+  .chat{margin-top:8px}
+  .msg{display:flex;gap:12px;margin:14px 0}
+  .msg .av{width:26px;height:26px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--gray-bg);color:var(--muted)}
+  .msg.ai .av{background:var(--text);color:#fff}
+  .msg .bd{flex:1;min-width:0}
+  .msg .bd p:last-child{margin-bottom:0}
+  .msg .sig{font-size:12px;color:var(--faint);margin-top:4px}
+  .msg .sig b{font-weight:500;color:var(--muted)}
+  .composer{display:flex;gap:8px;align-items:flex-end;margin-top:14px;border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 12px;background:#fff}
+  .composer:focus-within{border-color:#c7c7c5;box-shadow:0 0 0 2px rgba(35,131,226,.12)}
+  .composer textarea{flex:1;border:0;outline:none;resize:none;min-height:24px;max-height:160px;line-height:1.5;padding:2px 0;background:transparent}
+  .starters{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+  .md ul,.md ol{margin:4px 0 8px;padding-left:22px}
+  .md li{margin:2px 0}
+  .md code{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--gray-bg);padding:1px 5px;border-radius:3px}
+  .typing{display:inline-flex;gap:3px;padding:6px 0}
+  .typing i{width:6px;height:6px;border-radius:50%;background:#c7c7c5;animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+  /* 画像 */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 22px}
+  .stat{border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .stat b{display:block;font-size:26px;font-weight:600;line-height:1.1}
+  .stat span{font-size:12px;color:var(--muted)}
+  .bars{margin:8px 0}
+  .bar{display:grid;grid-template-columns:150px 1fr 36px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
+  .bar .tr{height:8px;background:var(--gray-bg);border-radius:4px;overflow:hidden}
+  .bar .tr i{display:block;height:100%;border-radius:4px;background:var(--red)}
+  .bar.good .tr i{background:var(--green)}
+  .bar .v{text-align:right;color:var(--faint);font-size:12px}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:500;font-size:12px}
+  .rec{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;margin:6px 0;cursor:pointer}
+  .rec:hover{background:var(--hover)}
+  .rec .n{font-weight:500}.rec .w{flex:1;font-size:13px;color:var(--muted)}
+
+  /* 设置 */
+  .provs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:12px 0}
+  .prov{border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer}
+  .prov:hover{background:var(--hover)}.prov.on{border-color:var(--blue);background:var(--blue-bg)}
+  .prov b{display:block;font-size:14px;font-weight:600}.prov span{font-size:12px;color:var(--muted)}
+  .fld{margin:12px 0}.fld label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+  .fld input,.fld select{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;outline:none}
+  .fld input:focus{border-color:#c7c7c5;box-shadow:0 0 0 2px rgba(35,131,226,.12)}
+  .fld .tip{font-size:12px;color:var(--faint);margin-top:4px}
+
+  #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 16px;border-radius:6px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+  #toast.on{opacity:1}#toast.bad{background:var(--red)}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="side-head">
+      <div class="brand" onclick="go('#home')"><span class="ico">AI</span>AI 产品经理入门</div>
+      <div class="search">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+        <input id="q" placeholder="搜术语,中英文都行" oninput="renderSide()">
+      </div>
+    </div>
+    <div class="side-body" id="sideBody"></div>
+    <div class="side-foot">
+      <div class="prog"><i id="progBar" style="width:0"></i></div>
+      <div class="prog-t" id="progT"></div>
+      <div class="row nav" onclick="go('#profile')"><span class="ic">◐</span><span class="nm">我的画像</span></div>
+      <div class="row nav" onclick="go('#settings')"><span class="ic">⚙</span><span class="nm">设置</span></div>
+    </div>
+  </aside>
+  <main id="main"><div class="page" id="page"></div></main>
+</div>
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S = {terms: [], levels: {}, next: [], profile: null, ai: false, cur: null, view: 'home', closed: {}, settings: null};
+const STATUS_T = {new: '没看过', learning: '在学', got: '懂了', confused: '卡住了'};
+
+async function api(path, body){
+  const r = await fetch(path, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)} : {});
+  const d = await r.json().catch(() => ({ok:false, msg:'返回不是 JSON'}));
+  if(!r.ok || d.ok === false) throw new Error(d.msg || ('HTTP ' + r.status));
+  return d;
+}
+let toastT;
+function toast(m, bad){ const t = $('#toast'); t.textContent = m; t.className = 'on' + (bad ? ' bad' : ''); clearTimeout(toastT); toastT = setTimeout(() => t.className = '', 2400); }
+
+// 极简 Markdown:段落、**粗**、`code`、- 列表、1. 列表。够用,不引库。
+function md(s){
+  const lines = String(s || '').split(/\r?\n/); let out = '', list = null;
+  const inl = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+  const close = () => { if(list){ out += `</${list}>`; list = null; } };
+  for(const ln of lines){
+    const m = ln.match(/^\s*([-*•]|\d+[.、])\s+(.*)/);
+    if(m){ const k = /\d/.test(m[1]) ? 'ol' : 'ul'; if(list !== k){ close(); out += `<${k}>`; list = k; } out += `<li>${inl(m[2])}</li>`; continue; }
+    close();
+    if(ln.trim() === '') continue;
+    if(/^#{1,3}\s/.test(ln)) out += `<h3>${inl(ln.replace(/^#+\s/, ''))}</h3>`;
+    else out += `<p>${inl(ln)}</p>`;
+  }
+  close(); return out;
+}
+
+// ---------- 路由 ----------
+function go(h){ location.hash = h; }
+window.addEventListener('hashchange', route);
+async function route(){
+  const h = location.hash || '#home';
+  if(h.startsWith('#t/')) await openTerm(h.slice(3));
+  else if(h === '#profile') await renderProfile();
+  else if(h === '#settings') await renderSettings();
+  else renderHome();
+  renderSide();
+  $('#main').scrollTop = 0;
+}
+
+// ---------- 侧栏 ----------
+async function loadTerms(){
+  const d = await api('/api/terms');
+  S.terms = d.terms; S.levels = d.levels; S.next = d.next; S.profile = d.profile; S.ai = d.ai_ready;
+}
+function renderSide(){
+  const q = ($('#q').value || '').trim().toLowerCase();
+  const by = {};
+  for(const t of S.terms){
+    if(q && !(t.name.toLowerCase().includes(q) || t.en.toLowerCase().includes(q) || t.one.toLowerCase().includes(q))) continue;
+    (by[t.level] = by[t.level] || []).push(t);
+  }
+  let h = '';
+  if(!q && S.next.length){
+    h += `<div class="sec next"><div class="sec-h"><span>下一步</span></div><div class="sec-list">` +
+      S.next.slice(0,3).map(n => `<div class="row ${S.cur === n.id ? 'on' : ''}" onclick="go('#t/${n.id}')"><span class="dot ${n.status}"></span><span class="nm">${esc(n.name)}<span class="why">${esc(n.why)}</span></span></div>`).join('') + `</div></div>`;
+  }
+  for(const lv of [1,2,3]){
+    const list = by[lv] || []; if(q && !list.length) continue;
+    const got = list.filter(t => t.status === 'got').length;
+    const closed = !q && S.closed[lv];
+    h += `<div class="sec ${closed ? 'closed' : ''}"><div class="sec-h" onclick="S.closed[${lv}]=!S.closed[${lv}];renderSide()"><span>${esc(S.levels[lv] || '')}</span><span class="n">${got}/${list.length}</span></div><div class="sec-list">` +
+      list.map(t => `<div class="row ${S.cur === t.id ? 'on' : ''}" onclick="go('#t/${t.id}')"><span class="dot ${t.status}"></span><span class="nm">${esc(t.name)}</span><span class="en">${esc(t.en.split(' (')[0])}</span></div>`).join('') + `</div></div>`;
+  }
+  if(q && !h) h = `<div class="row" style="cursor:default">没找到「${esc(q)}」</div>`;
+  $('#sideBody').innerHTML = h;
+  const got = S.terms.filter(t => t.status === 'got').length;
+  $('#progBar').style.width = (100 * got / Math.max(1, S.terms.length)) + '%';
+  $('#progT').textContent = `已掌握 ${got} / ${S.terms.length}`;
+}
+
+// ---------- 首页 ----------
+function renderHome(){
+  S.cur = null; S.view = 'home';
+  const got = S.terms.filter(t => t.status === 'got').length;
+  const first = S.next[0];
+  $('#page').innerHTML = `
+    <h1>AI 产品经理入门</h1>
+    <div class="sub">从零开始认识大模型和智能体里的词。每个词都用人话讲一遍,不懂就接着问。</div>
+    <div class="callout">
+      <span class="em">👋</span>
+      <div class="body">
+        ${got === 0 ? `<p>还没开始。左边是学习路径,从「入门」这一栏的第一个词开始就行。每学完一个,点「懂了」,下一步会自动排出来。</p>` :
+          `<p>已经掌握 ${got} 个。${first ? `下一步建议看 <a href="#t/${first.id}"><b>${esc(first.name)}</b></a> —— ${esc(first.why)}。` : '路径上的词都学完了。'}</p>`}
+        ${S.ai ? '' : `<p class="hint">追问和「按我的方式再讲」需要一个模型。到 <a href="#settings">设置</a> 里选一家、填 key。术语表本身不用。</p>`}
+      </div>
+    </div>
+    <h2>它是怎么适应你的</h2>
+    <p>你每一次追问,导师在回答的同时会记一条「信号」:这一轮你卡在哪类困难上、哪种讲法起了作用。信号攒多了,就归纳成一段学员画像。之后每讲一个新词,画像都会先塞给导师 —— 你不用重复说「我不太懂技术」,它已经知道了。</p>
+    <p>画像随时可以在 <a href="#profile">我的画像</a> 里看,看不顺眼可以清空重来。</p>
+    <h2>三层路径</h2>
+    ${[1,2,3].map(lv => { const list = S.terms.filter(t => t.level === lv); return `
+      <h3><span class="tag l${lv}">${lv}</span> ${esc(S.levels[lv])}</h3>
+      <div class="chips">${list.map(t => `<span class="chip" onclick="go('#t/${t.id}')"><span class="dot ${t.status}"></span>${esc(t.name)}</span>`).join('')}</div>`; }).join('')}
+  `;
+}
+
+// ---------- 术语页 ----------
+let T = null;   // 当前术语的完整数据
+async function openTerm(id){
+  S.cur = id; S.view = 'term';
+  try { T = await api('/api/term?id=' + encodeURIComponent(id)); }
+  catch(e){ $('#page').innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+  api('/api/open', {id}).catch(() => {});
+  const t = T.term, p = T.progress;
+  const st = p.status;
+  $('#page').innerHTML = `
+    <h1>${esc(t.name)}</h1>
+    <div class="sub"><span>${esc(t.en)}</span><span class="tag l${t.level}">${esc(S.levels[t.level].split(':')[0])}</span><span class="tag cat">${esc(t.cat)}</span><span class="tag st ${st}" id="stTag">${STATUS_T[st]}</span></div>
+    ${T.prereq.length ? `<div class="hint" style="margin:-8px 0 14px">先要懂:${T.prereq.map(r => `<a href="#t/${r.id}">${esc(r.name)}</a>${r.status === 'got' ? ' ✓' : ''}`).join(' · ')}</div>` : ''}
+    <div class="big">${esc(t.one)}</div>
+    ${t.explain.map(x => `<p>${esc(x)}</p>`).join('')}
+    <div class="callout yellow"><span class="em">💡</span><div class="body"><b class="h">打个比方</b>${esc(t.analogy)}</div></div>
+    <div class="callout blue"><span class="em">🧩</span><div class="body"><b class="h">在产品里长这样</b>${esc(t.example)}</div></div>
+    <div class="callout red"><span class="em">⚠️</span><div class="body"><b class="h">常见误解</b>${esc(t.pitfall)}</div></div>
+
+    <h2>按你的方式再讲一遍</h2>
+    <div id="sup">${supHtml(T.supplement)}</div>
+
+    <h2>自测一下</h2>
+    <div class="quiz" id="quiz">
+      <p><b>${esc(t.quiz.q)}</b></p>
+      ${t.quiz.options.map((o, i) => `<div class="opt" data-i="${i}" onclick="answer(${i})"><span class="k">${'ABCD'[i]}</span><span>${esc(o)}</span></div>`).join('')}
+      <div id="quizWhy"></div>
+    </div>
+
+    <div class="btns" style="margin-top:22px">
+      <button class="btn ok" onclick="mark('got')">✓ 懂了</button>
+      <button class="btn warn" onclick="mark('confused')">还是不太懂</button>
+      ${st !== 'new' ? `<button class="btn ghost" onclick="mark('learning')">重置为「在学」</button>` : ''}
+      <span class="hint" id="markHint">${p.quiz_right + p.quiz_wrong ? `自测 ${p.quiz_right} 对 ${p.quiz_wrong} 错` : ''}</span>
+    </div>
+
+    ${T.related.length ? `<h3>相关的词</h3><div class="chips">${T.related.map(r => `<span class="chip" onclick="go('#t/${r.id}')"><span class="dot ${r.status}"></span>${esc(r.name)}</span>`).join('')}</div>` : ''}
+
+    <div class="divider"></div>
+    <h2 style="margin-top:0">接着问</h2>
+    ${T.ai_ready ? '' : `<div class="note">还没配模型。到 <a href="#settings">设置</a> 里填一个 key,就能在这里追问,导师会根据你的画像调整讲法。</div>`}
+    <div class="chat" id="chat">${T.chats.map(m => msgHtml(m.role, m.content)).join('')}</div>
+    <div class="starters" id="starters">
+      ${['用一个我工作里的例子讲讲', '它和相近的概念有什么区别?', '为什么产品经理要懂这个?', '再简单一点,我还是没懂'].map(s => `<span class="chip" onclick="ask(this.textContent)">${esc(s)}</span>`).join('')}
+    </div>
+    <div class="composer">
+      <textarea id="msg" rows="1" placeholder="哪里没懂,直接说" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}" oninput="this.style.height='auto';this.style.height=Math.min(160,this.scrollHeight)+'px'"></textarea>
+      <button class="btn primary" id="sendBtn" onclick="send()" ${T.ai_ready ? '' : 'disabled'}>发送</button>
+      ${T.chats.length ? `<button class="btn ghost" onclick="clearChat()" title="清空这个词下的对话">清空</button>` : ''}
+    </div>
+  `;
+  // 上次标了「卡住」而且画像已经有信号,就自动生成一份补充讲解
+  if(st === 'confused' && T.ai_ready && !T.supplement) supplement(false);
+}
+function supHtml(s){
+  if(!s) return `<div class="callout purple"><span class="em">✦</span><div class="body"><b class="h">自适应讲解</b>
+    <p style="margin:0 0 8px">导师会按你的画像 —— 你常卡在哪类困难、哪种讲法对你有用 —— 换一种方式讲这个词。信号越多,讲得越对路。</p>
+    <button class="btn" onclick="supplement(false)" ${S.ai ? '' : 'disabled'}>${S.ai ? '给我讲一遍' : '要先配模型'}</button></div></div>`;
+  return `<div class="callout purple"><span class="em">✦</span><div class="body"><b class="h">${esc(s.title)}</b><div class="md">${md(s.text)}</div>
+    <div class="btns" style="margin:10px 0 0"><button class="btn ghost" onclick="supplement(true)">画像更新了,再讲一遍</button></div></div></div>`;
+}
+async function supplement(force){
+  const el = $('#sup'); if(!el) return;
+  el.innerHTML = `<div class="callout purple"><span class="em">✦</span><div class="body"><span class="typing"><i></i><i></i><i></i></span> <span class="hint">正在按你的画像重讲……</span></div></div>`;
+  try { const d = await api('/api/supplement', {id: S.cur, force}); el.innerHTML = supHtml(d); if(d.cached) toast('画像没变,用的上次那份'); }
+  catch(e){ el.innerHTML = supHtml(null); toast(e.message, true); }
+}
+async function answer(i){
+  const q = $('#quiz'); if(q.classList.contains('done')) return;
+  q.classList.add('done');
+  try {
+    const d = await api('/api/quiz', {id: S.cur, choice: i});
+    q.querySelectorAll('.opt').forEach(o => { const k = +o.dataset.i; if(k === d.answer) o.classList.add('right'); else if(k === i) o.classList.add('wrong'); o.onclick = null; });
+    $('#quizWhy').innerHTML = `<div class="callout ${d.correct ? 'green' : 'red'}"><span class="em">${d.correct ? '✓' : '✗'}</span><div class="body">${d.correct ? '对了。' : '不对。'}${esc(d.why)}</div></div>`;
+    $('#markHint').textContent = `自测 ${d.progress.quiz_right} 对 ${d.progress.quiz_wrong} 错`;
+  } catch(e){ q.classList.remove('done'); toast(e.message, true); }
+}
+async function mark(status){
+  try {
+    const d = await api('/api/status', {id: S.cur, status});
+    S.next = d.next;
+    const t = S.terms.find(x => x.id === S.cur); if(t) t.status = status;
+    const tag = $('#stTag'); tag.className = 'tag st ' + status; tag.textContent = STATUS_T[status];
+    renderSide();
+    if(status === 'got'){ const n = S.next[0]; toast(n ? `记下了。下一步:${n.name}` : '记下了'); }
+    else if(status === 'confused'){ toast('记下了。要不要在下面把没懂的地方说出来?'); if(S.ai && !T.supplement) supplement(false); }
+    else toast('已重置');
+  } catch(e){ toast(e.message, true); }
+}
+function msgHtml(role, text, sig){
+  const ai = role !== 'user';
+  let s = '';
+  if(sig && (sig.difficulty_label.length || sig.style_label.length))
+    s = `<div class="sig">记下了:${sig.difficulty_label.length ? `困难 <b>${esc(sig.difficulty_label.join('、'))}</b>` : ''}${sig.difficulty_label.length && sig.style_label.length ? ' · ' : ''}${sig.style_label.length ? `有效讲法 <b>${esc(sig.style_label.join('、'))}</b>` : ''}</div>`;
+  return `<div class="msg ${ai ? 'ai' : ''}"><span class="av">${ai ? '师' : '我'}</span><div class="bd"><div class="md">${ai ? md(text) : `<p>${esc(text)}</p>`}</div>${s}</div></div>`;
+}
+function ask(s){ $('#msg').value = s; send(); }
+async function send(){
+  const ta = $('#msg'), m = ta.value.trim(); if(!m || !S.ai) return;
+  ta.value = ''; ta.style.height = 'auto';
+  const chat = $('#chat'); $('#starters').style.display = 'none';
+  chat.insertAdjacentHTML('beforeend', msgHtml('user', m));
+  chat.insertAdjacentHTML('beforeend', `<div class="msg ai" id="pending"><span class="av">师</span><div class="bd"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
+  $('#sendBtn').disabled = true; $('#pending').scrollIntoView({block: 'end'});
+  try {
+    const d = await api('/api/chat', {id: S.cur, message: m});
+    $('#pending').outerHTML = msgHtml('assistant', d.reply, d.signals);
+    T.chats.push({role: 'user', content: m}, {role: 'assistant', content: d.reply});
+    if(d.progress.status !== (S.terms.find(x => x.id === S.cur) || {}).status){
+      const t = S.terms.find(x => x.id === S.cur); if(t) t.status = d.progress.status;
+      const tag = $('#stTag'); tag.className = 'tag st ' + d.progress.status; tag.textContent = STATUS_T[d.progress.status];
+      renderSide();
+    }
+    if(d.memory_updated) toast('画像更新了一版');
+  } catch(e){ $('#pending').outerHTML = `<div class="msg ai"><span class="av">师</span><div class="bd"><p class="hint">没答上来:${esc(e.message)}</p></div></div>`; }
+  $('#sendBtn').disabled = false; ta.focus();
+  chat.lastElementChild.scrollIntoView({block: 'end'});
+}
+async function clearChat(){
+  if(!confirm('清空这个词下面的对话?画像里已经记下的信号不会删。')) return;
+  await api('/api/chat/clear', {id: S.cur}); T.chats = []; $('#chat').innerHTML = ''; $('#starters').style.display = '';
+}
+
+// ---------- 画像 ----------
+async function renderProfile(){
+  S.cur = null; S.view = 'profile';
+  const d = await api('/api/profile'); const p = d.profile;
+  const maxD = Math.max(1, ...p.difficulty.map(x => x.score)), maxS = Math.max(1, ...p.style.map(x => x.score));
+  const when = p.memory_at ? new Date(+p.memory_at * 1000).toLocaleString('zh-CN', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
+  $('#page').innerHTML = `
+    <h1>我的画像</h1>
+    <div class="sub">系统眼里的你。它决定了导师下一次怎么讲。</div>
+    <div class="stats">
+      <div class="stat"><b>${p.got}<span style="font-size:14px;color:var(--faint)"> / ${d.total}</span></b><span>已掌握</span></div>
+      <div class="stat"><b>${p.confused}</b><span>卡住的</span></div>
+      <div class="stat"><b>${p.quiz_right}<span style="font-size:14px;color:var(--faint)"> 对 ${p.quiz_wrong} 错</span></b><span>自测</span></div>
+      <div class="stat"><b>${p.signals}</b><span>累计信号</span></div>
+    </div>
+
+    <h2>学员画像</h2>
+    ${p.memory ? `<div class="callout"><span class="em">◐</span><div class="body"><p>${esc(p.memory)}</p><span class="hint">导师归纳于 ${when} · 每攒 6 条信号更新一次</span></div></div>`
+               : `<div class="callout"><span class="em">◐</span><div class="body">还没归纳。多追问几次,攒够 6 条信号后导师会写一段。${p.signals ? `现在有 ${p.signals} 条。` : ''}</div></div>`}
+
+    <h2>你常卡在哪</h2>
+    ${p.signals ? `<div class="bars">${p.difficulty.map(x => `<div class="bar"><span>${esc(x.label)}</span><span class="tr"><i style="width:${100 * x.score / maxD}%"></i></span><span class="v">${x.score}</span></div>`).join('')}</div>`
+                : `<p class="hint">还没有信号。去任何一个词下面追问,导师会边答边记。</p>`}
+    ${p.weak_cat.length ? `<p class="hint">薄弱的类别:${p.weak_cat.map(([c, n]) => `<b>${esc(c)}</b>`).join('、')} —— 推荐会往这几类倾斜。</p>` : ''}
+
+    <h2>哪种讲法对你有用</h2>
+    ${p.style.some(x => x.score) ? `<div class="bars">${p.style.map(x => `<div class="bar good"><span>${esc(x.label)}</span><span class="tr"><i style="width:${100 * x.score / maxS}%"></i></span><span class="v">${x.score}</span></div>`).join('')}</div>`
+                                 : `<p class="hint">还不知道。追问几轮之后会看出来。</p>`}
+
+    <h2>接下来学什么</h2>
+    ${d.next.map(n => `<div class="rec" onclick="go('#t/${n.id}')"><span class="dot ${n.status}"></span><span class="n">${esc(n.name)}</span><span class="w">${esc(n.why)}${n.missing.length ? ` · 先要懂 ${n.missing.map(m => esc((S.terms.find(t => t.id === m) || {}).name || m)).join('、')}` : ''}</span><span class="tag l${n.level}">${n.level}</span></div>`).join('')}
+
+    ${d.confused.length ? `<h2>卡住的词</h2><div class="chips">${d.confused.map(t => `<span class="chip" onclick="go('#t/${t.id}')"><span class="dot confused"></span>${esc(t.name)}</span>`).join('')}</div>` : ''}
+    ${d.got.length ? `<h2>已掌握</h2><div class="chips">${d.got.map(t => `<span class="chip" onclick="go('#t/${t.id}')"><span class="dot got"></span>${esc(t.name)}</span>`).join('')}</div>` : ''}
+
+    ${d.signals.length ? `<h2>最近的信号</h2><table><tr><th>词</th><th>困难</th><th>有效讲法</th><th>理解</th><th>备注</th></tr>
+      ${d.signals.slice().reverse().map(s => `<tr><td><a href="#t/${s.term}">${esc(s.term_name)}</a></td><td>${esc(s.difficulty_label.join('、')) || '—'}</td><td>${esc(s.style_label.join('、')) || '—'}</td><td>${({yes: '懂了', partly: '一半', no: '没懂'})[s.understood]}</td><td>${esc(s.note)}</td></tr>`).join('')}</table>` : ''}
+
+    <hr>
+    <div class="btns"><button class="btn ghost" onclick="resetAll()">清空全部记忆,重新开始</button><span class="hint">术语表不受影响。</span></div>
+  `;
+}
+async function resetAll(){
+  if(!confirm('清空所有进度、对话和画像?不可恢复。')) return;
+  await api('/api/reset', {}); await loadTerms(); toast('已清空'); route();
+}
+
+// ---------- 设置 ----------
+async function renderSettings(){
+  S.cur = null; S.view = 'settings';
+  const s = S.settings = await api('/api/settings');
+  $('#page').innerHTML = `
+    <h1>设置</h1>
+    <div class="sub">密钥只存本机,不回传浏览器。</div>
+    ${s.inherited ? `<div class="note">当前沿用选题台的设置(上一级目录的 config.json)。在这里保存后会有自己的一份。</div>` : ''}
+    <div class="provs">${s.presets.map(p => `<div class="prov ${p.id === s.preset ? 'on' : ''}" onclick="pickProv('${p.id}')"><b>${esc(p.name)}</b><span>${esc(p.note)}</span></div>`).join('')}</div>
+    <div class="fld" id="w-base"><label>base_url</label><input id="s-base" value="${esc(s.base_url)}"></div>
+    <div class="fld"><label>模型</label><input id="s-model" value="${esc(s.model)}"><div class="tip">模型名以服务商文档为准,预置的会过期。导师对话用便宜快的模型就够。</div></div>
+    <div class="fld"><label>API key</label><input id="s-key" type="password" placeholder="${s.key_set ? '已设置 ' + esc(s.key_hint) + '(留空表示不改)' : '粘贴 key'}">
+      <div class="tip">${s.from_env ? '当前从环境变量 ANTHROPIC_API_KEY 读到的。' : '存在 config.json,权限 0600。'}</div></div>
+    <div class="fld"><label>投入(Anthropic 有效)</label><select id="s-effort">${['low','medium','high'].map(e => `<option ${e === s.effort ? 'selected' : ''}>${e}</option>`).join('')}</select></div>
+    <div class="btns"><button class="btn primary" onclick="saveSettings()">保存</button><button class="btn" onclick="testSettings()">测一下连通</button><span class="hint" id="set-st"></span></div>
+  `;
+  $('#w-base').style.display = s.kind === 'anthropic' ? 'none' : '';
+}
+function pickProv(id){
+  const p = S.settings.presets.find(x => x.id === id); if(!p) return;
+  S.settings.preset = id; S.settings.kind = p.kind;
+  document.querySelectorAll('.prov').forEach(el => el.classList.toggle('on', el.querySelector('b').textContent === p.name));
+  $('#s-base').value = p.base_url; $('#s-model').value = p.model;
+  $('#w-base').style.display = p.kind === 'anthropic' ? 'none' : '';
+}
+async function saveSettings(){
+  const body = {preset: S.settings.preset, kind: S.settings.kind, base_url: $('#s-base').value.trim(), model: $('#s-model').value.trim(), effort: $('#s-effort').value};
+  const k = $('#s-key').value.trim(); if(k) body.api_key = k;
+  try { await api('/api/settings', body); toast('已保存'); await loadTerms(); renderSettings(); } catch(e){ toast(e.message, true); }
+}
+async function testSettings(){
+  $('#set-st').textContent = '测试中…';
+  const d = await fetch('/api/settings/test', {method: 'POST', body: '{}'}).then(r => r.json());
+  $('#set-st').textContent = d.msg; $('#set-st').style.color = d.ok ? 'var(--green)' : 'var(--red)';
+}
+
+// ---------- 启动 ----------
+(async () => { await loadTerms(); route(); })();
+</script>
+</body>
+</html>

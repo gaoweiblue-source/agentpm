@@ -1,0 +1,10 @@
+# 密钥
+config.json
+
+# 学员记忆:删了就是新学员
+data/
+
+*.log
+__pycache__/
+*.pyc
+.DS_Store
